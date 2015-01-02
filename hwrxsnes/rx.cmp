@@ -1,0 +1,143 @@
+Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 12/20/2014 4:19:07 PM
+
+BeginCmp
+TimeStamp = /54890E48;
+Reference = C1;
+ValeurCmp = 0.1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /54891DF6;
+Reference = C2;
+ValeurCmp = 1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DB3A2;
+Reference = C3;
+ValeurCmp = 0.1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DEAAE;
+Reference = C4;
+ValeurCmp = 0.1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548FB6E3;
+Reference = C5;
+ValeurCmp = 1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548A6224;
+Reference = D1;
+ValeurCmp = BI_LED;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /548921E2;
+Reference = IC1;
+ValeurCmp = ATMEGA328-A;
+IdModule  = SMD_Packages:TQFP-32;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DB928;
+Reference = P1;
+ValeurCmp = +5v;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DB59E;
+Reference = P2;
+ValeurCmp = Clock;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DB66E;
+Reference = P3;
+ValeurCmp = Latch;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DB68F;
+Reference = P4;
+ValeurCmp = Data;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DB6FB;
+Reference = P5;
+ValeurCmp = GND;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54890EED;
+Reference = P6;
+ValeurCmp = nRF;
+IdModule  = Pin_Headers:Pin_Header_Straight_2x04;
+EndCmp
+
+BeginCmp
+TimeStamp = /5489134F;
+Reference = P7;
+ValeurCmp = ISP;
+IdModule  = Pin_Headers:Pin_Header_Straight_2x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /5495E84E;
+Reference = P8;
+ValeurCmp = SER_RX;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /5495E867;
+Reference = P9;
+ValeurCmp = SER_TX;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54891382;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /54891606;
+Reference = R2;
+ValeurCmp = 10k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /548A749B;
+Reference = R3;
+ValeurCmp = 120;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /548916E3;
+Reference = U1;
+ValeurCmp = TCR2EF;
+IdModule  = SMD_Packages:SOT-23-5;
+EndCmp
+
+EndListe

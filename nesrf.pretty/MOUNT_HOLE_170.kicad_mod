@@ -1,0 +1,11 @@
+(module MOUNT_HOLE_170 (layer F.Cu) (tedit 548476F5)
+  (descr "Mechanical only PCB mount hole, diameter 170 mil.")
+  (tags hole)
+  (fp_text reference MOUNT_HOLE_170 (at 0 -3.2) (layer F.SilkS) hide
+    (effects (font (size 1.016 1.016) (thickness 0.254)))
+  )
+  (fp_text value P*** (at 0 3.2) (layer F.SilkS) hide
+    (effects (font (size 1.016 1.016) (thickness 0.254)))
+  )
+  (pad "" np_thru_hole circle (at 0 0) (size 4.318 4.318) (drill 4.318) (layers *.Mask F.Cu F.SilkS))
+)

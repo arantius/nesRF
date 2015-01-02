@@ -1,0 +1,22 @@
+(module SSOP-3 (layer F.Cu) (tedit 548E3248)
+  (attr smd)
+  (fp_text reference SSOP-3 (at 0 2.286) (layer F.SilkS) hide
+    (effects (font (size 0.762 0.762) (thickness 0.127)))
+  )
+  (fp_text value VAL** (at 0 -2.286) (layer F.SilkS) hide
+    (effects (font (size 0.762 0.762) (thickness 0.1905)))
+  )
+  (fp_circle (center -0.889 0.254) (end -0.889 0) (layer F.SilkS) (width 0.15))
+  (fp_line (start 1.46 0.8) (end -1.46 0.8) (layer F.SilkS) (width 0.15))
+  (fp_line (start -1.46 0.8) (end -1.46 -0.8) (layer F.SilkS) (width 0.15))
+  (fp_line (start -1.43 -0.8) (end 1.46 -0.8) (layer F.SilkS) (width 0.15))
+  (fp_line (start 1.46 -0.8) (end 1.46 0.8) (layer F.SilkS) (width 0.15))
+  (pad 1 smd rect (at -0.95 1.175) (size 0.4 0.45) (layers F.Cu F.Paste F.Mask))
+  (pad 2 smd rect (at 0.95 1.175) (size 0.4 0.45) (layers F.Cu F.Paste F.Mask))
+  (pad 3 smd rect (at 0 -1.175) (size 0.4 0.45) (layers F.Cu F.Paste F.Mask))
+  (model SMD_Packages/SSOP-8.wrl
+    (at (xyz 0 0 0))
+    (scale (xyz 0.25 0.25 0.25))
+    (rotate (xyz 0 0 0))
+  )
+)

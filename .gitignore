@@ -1,0 +1,6 @@
+$*
+*-bak
+*.bak
+*.bck
+*.dcm
+_autosave*

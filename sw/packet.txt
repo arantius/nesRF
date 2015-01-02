@@ -1,0 +1,25 @@
+The RF packet format is two bytes, sixteen bits.  A button HIGH means it is
+_not_ pressed.  This is both the value we will read directly, given a pullup
+input, and the value that we must send to the console.
+
+The sixteen bits are, most to least significant order:
+
+F  Battery status.  0 = healthy, 1 = low
+E  Sleeping status.  0 = normal, 1 = transmitter is sleeping
+D  Undefined, reserved for future use.
+C  Undefined, reserved for future use.
+B  Button data, R.
+A  Button data, L.
+9  Button data, X.
+8  Button data, A.
+7  Button data, Right.
+6  Button data, Left.
+5  Button data, Down.
+4  Button data, Up.
+3  Button data, Start.
+2  Button data, Select.
+1  Button data, Y.
+0  Button data, B.
+
+The button data is arranged so that it can be right-shifted out, and the
+least significant bit is always the next value that the console needs.

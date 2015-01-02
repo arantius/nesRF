@@ -1,0 +1,276 @@
+Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 12/20/2014 3:54:15 PM
+
+BeginCmp
+TimeStamp = /548395B4;
+Reference = BAT1;
+ValeurCmp = BAT;
+IdModule  = Connect:PINHEAD1-2;
+EndCmp
+
+BeginCmp
+TimeStamp = /54832416;
+Reference = C1;
+ValeurCmp = 0.1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /5483B1F0;
+Reference = C2;
+ValeurCmp = 4.7u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548B977D;
+Reference = C3;
+ValeurCmp = 1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C7F79;
+Reference = C4;
+ValeurCmp = 4.7u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C918B;
+Reference = C5;
+ValeurCmp = 0.1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548E1D6B;
+Reference = C6;
+ValeurCmp = 0.1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /548FC150;
+Reference = C7;
+ValeurCmp = 0.1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /54831FBC;
+Reference = IC1;
+ValeurCmp = ATMEGA328-A;
+IdModule  = SMD_Packages:TQFP-32;
+EndCmp
+
+BeginCmp
+TimeStamp = /5483C0D4;
+Reference = J1;
+ValeurCmp = POWER_JACK;
+IdModule  = nesRF TX:SJ-4351x;
+EndCmp
+
+BeginCmp
+TimeStamp = /54834047;
+Reference = P1;
+ValeurCmp = nRF;
+IdModule  = Pin_Headers:Pin_Header_Straight_2x04;
+EndCmp
+
+BeginCmp
+TimeStamp = /54833358;
+Reference = P2;
+ValeurCmp = ISP;
+IdModule  = Pin_Headers:Pin_Header_Straight_2x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /54848EC0;
+Reference = P3;
+ValeurCmp = bLT+;
+IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+EndCmp
+
+BeginCmp
+TimeStamp = /54848F45;
+Reference = P4;
+ValeurCmp = bLT-;
+IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+EndCmp
+
+BeginCmp
+TimeStamp = /54848EFF;
+Reference = P5;
+ValeurCmp = bRT+;
+IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+EndCmp
+
+BeginCmp
+TimeStamp = /54848F1E;
+Reference = P6;
+ValeurCmp = bRT-;
+IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+EndCmp
+
+BeginCmp
+TimeStamp = /5495EB0E;
+Reference = P7;
+ValeurCmp = SER_RX;
+IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+EndCmp
+
+BeginCmp
+TimeStamp = /5495EA4A;
+Reference = P8;
+ValeurCmp = SER_TX;
+IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+EndCmp
+
+BeginCmp
+TimeStamp = /548321EB;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /54835112;
+Reference = R2;
+ValeurCmp = 24.9k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /54883CF3;
+Reference = R3;
+ValeurCmp = 180;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /548847FE;
+Reference = R4;
+ValeurCmp = 10k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /548E2A4D;
+Reference = R5;
+ValeurCmp = 10k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /548E3FE5;
+Reference = R6;
+ValeurCmp = 300k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /548E400E;
+Reference = R7;
+ValeurCmp = 100k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /548671B8;
+Reference = SW1;
+ValeurCmp = ESwitch_WBL2U;
+IdModule  = nesRF TX:Eswitch_WBL_2U;
+EndCmp
+
+BeginCmp
+TimeStamp = /548346A3;
+Reference = SW2;
+ValeurCmp = UP;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54834782;
+Reference = SW3;
+ValeurCmp = DOWN;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /5483479B;
+Reference = SW4;
+ValeurCmp = LEFT;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /548347B4;
+Reference = SW5;
+ValeurCmp = RIGHT;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /548350A1;
+Reference = SW6;
+ValeurCmp = START;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /548350A8;
+Reference = SW7;
+ValeurCmp = SELECT;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54835D11;
+Reference = SW8;
+ValeurCmp = A;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54835D18;
+Reference = SW9;
+ValeurCmp = B;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54835D1F;
+Reference = SW10;
+ValeurCmp = X;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54835D26;
+Reference = SW11;
+ValeurCmp = Y;
+IdModule  = nesRF TX:Carbon_Switch_PCB_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54839E58;
+Reference = U1;
+ValeurCmp = TCR2EF;
+IdModule  = SMD_Packages:SOT-23-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /548C64ED;
+Reference = U2;
+ValeurCmp = MCP73831;
+IdModule  = SMD_Packages:SOT-23-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /548E58B5;
+Reference = U3;
+ValeurCmp = BD49;
+IdModule  = nesRF TX:SSOP-3;
+EndCmp
+
+EndListe
