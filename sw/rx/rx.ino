@@ -45,7 +45,10 @@ enum LedState {
 };
 
 RF24 radio(10, 9);  // CE, CS pins
-volatile uint16_t gData;
+
+volatile uint8_t gLatched = 0;
+volatile uint16_t gRfData = 0xFFFF;
+volatile uint16_t gConsData = 0xFFFF;
 
 LedState gLedState = YELLOW_BLINK_ON;
 unsigned long gLastDataTime = 0;
@@ -53,45 +56,34 @@ unsigned long gNextLedBlinkTime = 0;
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-void latch() {
-  // This interrupt handler fires on the falling edge of LATCH.  Immediately
-  // present the first bit on DATA out, then the next on each falling edge of
-  // CLOCK.  A DATA high means NOT pressed, this is the format we expect
-  // from the RF data.
-  // The timing is critical, with only microseconds to react, so it all goes
-  // right here inside the interrupt handler.
-  uint16_t data = gData;
+void ISR_latch() {
+  gLatched = 1;
 
-  #if defined(CONS_SNES)
-    for (uint8_t i = 0; i < 12; i++) {
-      // Set DATA output pin to LSB of data.
-      if (data && 0x0001) {
-        PORTD |= _BV(4);
-      } else {
-        PORTD = ~_BV(4);
-      }
-      // Shift next bit of data into place.
-      data = data >> 1;
-      // Wait for CLOCK to drop.
-      while (PORTD && _BV(3)) ;;
-    }
+  // Copy the RF button data into the console data.
+  gConsData = gRfData;
 
-    // Data should stay high for the next four clock cycles.
-    PORTD |= _BV(4);
-    for (uint8_t i = 0; i < 4; i++) {
-      // Wait for CLOCK to drop.
-      while (PORTD && _BV(3)) ;;
-    }
-  #elif defined(CONS_NES)
-    #error NES support incomplete.
-  #else
-    #error Bad CONS_XXX defined.
-  #endif
-
-  // All done, drive DATA low.
-  PORTD &= 0xEF;
+  // Immediately present the first bit of data (CLOCK is already high for
+  // the first latched pulse).
+  setDataLine();
 }
 
+
+void ISR_clock() {
+  // On each rising edge of CLOCK, set the next data bit.
+  setDataLine();
+}
+
+
+inline void setDataLine() {
+  if (gConsData & 0x01) {
+    PORTD |= _BV(4);
+  } else {
+    PORTD &= ~_BV(4);
+  }
+  gConsData = gConsData >> 1;
+}
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 void lightLed(int ledState) {
   unsigned long now = millis();
@@ -141,6 +133,7 @@ void loop(void) {
   }
   lightLed();
 
+  // TODO: Set appropriate masks and just read RF_IRQ pin to see pending data?
   if (radio.available()) {
     lightLed(OFF);
     // Read data from the radio.
@@ -150,16 +143,49 @@ void loop(void) {
     #ifdef DEBUG
     printf("RX got %04x\n", data);
     #endif
+
+    #if defined(CONS_SNES)
+      ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
+        // Fix the first 4 bits high, then use the rest of the received data.
+        gRfData = 0xF000 | data;
+        // TODO: Use battery/sleeping status bits?
+      }
+    #elif defined(CONS_NES)
+      // TODO: reorder, then assign, all the right bits.
+      #error NES support incomplete.
+    #else
+      #error Bad CONS_XXX defined.
+    #endif
+
     gLastDataTime = now;
     lightLed();
-
-    // Export this data to where the LATCH interrupt handler can see it.
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-      gData = data;
-    }
   }
 
-  delay(1);
+  // DEV: read data from Serial, send that to console.
+  #ifdef DEBUG
+  if (Serial.available()) {
+    char c = Serial.read();
+    switch (c) {
+      case 'b': gRfData ^= _BV(0); break;
+      case 'y': gRfData ^= _BV(1); break;
+      case 'e': gRfData ^= _BV(2); break;  // sEelect
+      case 't': gRfData ^= _BV(3); break;  // sTart
+      case 'u': gRfData ^= _BV(4); break;
+      case 'd': gRfData ^= _BV(5); break;
+      case 'l': gRfData ^= _BV(6); break;
+      case 'r': gRfData ^= _BV(7); break;
+      case 'a': gRfData ^= _BV(8); break;
+      case 'x': gRfData ^= _BV(9); break;
+    }
+    printf("Data: %04x\n", gRfData);
+  }
+  #endif
+
+  if (gLatched) {
+    gLatched = 0;
+    // DEV: Twiddle LED on latch.
+    PORTD ^= _BV(6);
+  }
 }
 
 
@@ -187,14 +213,21 @@ void setup() {
   radio.openReadingPipe(0, address);
   radio.startListening();
 
-  // The LED indicator is hooked up to pins PC1 and PC2, make them outputs.
-  DDRC |= 0x06;
-  // The DATA output pin is PD4.
-  DDRD |= 0x10;
+  // The LED indicator is hooked up to pins PC1 and PC2.
+  DDRC |= _BV(1) | _BV(2);
+  // The DATA pin is PD4.
+  DDRD |= _BV(4);
 
-  // The latch pin is hooked up to INT0.  We have 6us from its falling edge
-  // to prepare serial data out.
-  attachInterrupt(0, latch, FALLING);
+  // The CLOCK and LATCH signals should be pullup enabled inputs.
+  DDRD &= ~(_BV(2) | _BV(3));
+  PORTD |= _BV(2) | _BV(3);
+
+  // DATA output is fully interrupt driven, from LATCH and CLOCK.
+  attachInterrupt(0, ISR_latch, RISING);
+  attachInterrupt(1, ISR_clock, RISING);
+
+  // DEV: LED indicator on PD6.
+  DDRD |= _BV(6);
 
   #ifdef DEBUG
   printf("\n");

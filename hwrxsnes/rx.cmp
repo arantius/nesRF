@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 12/20/2014 4:19:07 PM
+Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 1/4/2015 2:50:22 PM
 
 BeginCmp
 TimeStamp = /54890E48;
@@ -32,6 +32,20 @@ BeginCmp
 TimeStamp = /548FB6E3;
 Reference = C5;
 ValeurCmp = 1u;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /54A99077;
+Reference = C6;
+ValeurCmp = 22p;
+IdModule  = SMD_Packages:SMD-0402_c;
+EndCmp
+
+BeginCmp
+TimeStamp = /54A98DBE;
+Reference = C7;
+ValeurCmp = 22p;
 IdModule  = SMD_Packages:SMD-0402_c;
 EndCmp
 
@@ -101,14 +115,14 @@ EndCmp
 BeginCmp
 TimeStamp = /5495E84E;
 Reference = P8;
-ValeurCmp = SER_RX;
+ValeurCmp = RX;
 IdModule  = nesRF:Small_1x_Pad;
 EndCmp
 
 BeginCmp
 TimeStamp = /5495E867;
 Reference = P9;
-ValeurCmp = SER_TX;
+ValeurCmp = TX;
 IdModule  = nesRF:Small_1x_Pad;
 EndCmp
 
@@ -138,6 +152,13 @@ TimeStamp = /548916E3;
 Reference = U1;
 ValeurCmp = TCR2EF;
 IdModule  = SMD_Packages:SOT-23-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /54A98B41;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = nesRF:TSX-3225;
 EndCmp
 
 EndListe
