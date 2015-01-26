@@ -37,8 +37,8 @@ $Descr User 8000 6500
 encoding utf-8
 Sheet 1 1
 Title "nesRF Receiver (SNES)"
-Date "Sunday, January 04, 2015"
-Rev "v2"
+Date "Monday, January 26, 2015"
+Rev "v3"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -164,7 +164,7 @@ L C C2
 U 1 1 54891DF6
 P 1100 900
 F 0 "C2" H 1100 1000 40  0000 L CNN
-F 1 "1u" H 1106 815 40  0000 L CNN
+F 1 "0.1u" H 1106 815 40  0000 L CNN
 F 2 "SMD_Packages:SMD-0402_c" H 1138 750 30  0001 C CNN
 F 3 "" H 1100 900 60  0000 C CNN
 	1    1100 900 
@@ -201,7 +201,7 @@ L R R3
 U 1 1 548A749B
 P 5750 2800
 F 0 "R3" V 5830 2800 40  0000 C CNN
-F 1 "120" V 5757 2801 40  0000 C CNN
+F 1 "180" V 5757 2801 40  0000 C CNN
 F 2 "SMD_Packages:SMD-0402_r" V 5680 2800 30  0001 C CNN
 F 3 "" H 5750 2800 30  0000 C CNN
 	1    5750 2800
@@ -442,23 +442,10 @@ F 3 "" H 1250 3450 60  0000 C CNN
 	1    1250 3450
 	1    0    0    -1  
 $EndComp
-$Comp
-L CRYSTAL X1
-U 1 1 54A98B41
-P 5300 2200
-F 0 "X1" H 5300 2350 60  0000 C CNN
-F 1 "CRYSTAL" H 5300 2050 60  0000 C CNN
-F 2 "nesRF:TSX-3225" H 5300 2200 60  0001 C CNN
-F 3 "" H 5300 2200 60  0000 C CNN
-	1    5300 2200
-	0    -1   -1   0   
-$EndComp
 Wire Wire Line
 	6900 850  6900 800 
 Wire Wire Line
 	6850 850  6900 850 
-Wire Wire Line
-	6100 2500 6100 2850
 Wire Wire Line
 	6000 2800 6100 2800
 Wire Wire Line
@@ -486,7 +473,7 @@ Wire Wire Line
 	1850 2900 1850 4000
 Connection ~ 1850 1800
 Wire Wire Line
-	1850 2500 1850 1800
+	1850 1800 1850 2500
 Wire Wire Line
 	2000 1800 2000 2100
 Wire Wire Line
@@ -544,40 +531,6 @@ Connection ~ 1050 3450
 Connection ~ 1250 1800
 Connection ~ 2700 750 
 Connection ~ 1250 3450
-Wire Wire Line
-	3900 2500 5300 2500
-Wire Wire Line
-	3900 2400 5050 2400
-Wire Wire Line
-	5050 1900 5300 1900
-$Comp
-L C C7
-U 1 1 54A98DBE
-P 5500 2500
-F 0 "C7" H 5500 2600 40  0000 L CNN
-F 1 "22p" H 5506 2415 40  0000 L CNN
-F 2 "SMD_Packages:SMD-0402_c" H 5538 2350 30  0001 C CNN
-F 3 "" H 5500 2500 60  0000 C CNN
-	1    5500 2500
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	5050 2400 5050 1900
-$Comp
-L C C6
-U 1 1 54A99077
-P 5500 1900
-F 0 "C6" H 5500 2000 40  0000 L CNN
-F 1 "22p" H 5506 1815 40  0000 L CNN
-F 2 "SMD_Packages:SMD-0402_c" H 5538 1750 30  0001 C CNN
-F 3 "" H 5500 1900 60  0000 C CNN
-	1    5500 1900
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	5700 1900 5700 2500
-Wire Wire Line
-	5700 2500 6100 2500
 Connection ~ 6100 2800
 Wire Wire Line
 	5000 1350 3200 1350
@@ -590,11 +543,11 @@ Wire Wire Line
 	1550 1350 1550 1300
 Wire Wire Line
 	1550 1750 1550 1800
-Text Label 4650 2400 0    60   ~ 0
-XTAL1
-Text Label 4650 2500 0    60   ~ 0
-XTAL2
 NoConn ~ 3900 3800
 Text Label 2700 750  0    60   ~ 0
 2.5v
+Wire Wire Line
+	6100 2800 6100 2850
+NoConn ~ 3900 2400
+NoConn ~ 3900 2500
 $EndSCHEMATC

@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 1/4/2015 6:10:52 PM
+Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 1/27/2015 3:50:53 PM
 
 BeginCmp
 TimeStamp = /548395B4;
@@ -74,7 +74,7 @@ BeginCmp
 TimeStamp = /54834047;
 Reference = P1;
 ValeurCmp = nRF;
-IdModule  = Pin_Headers:Pin_Header_Straight_2x04;
+IdModule  = nesRF TX:nRF_Header_2x04;
 EndCmp
 
 BeginCmp
@@ -88,42 +88,42 @@ BeginCmp
 TimeStamp = /54848EC0;
 Reference = P3;
 ValeurCmp = bLT+;
-IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
 BeginCmp
 TimeStamp = /54848F45;
 Reference = P4;
 ValeurCmp = bLT-;
-IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
 BeginCmp
 TimeStamp = /54848EFF;
 Reference = P5;
 ValeurCmp = bRT+;
-IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
 BeginCmp
 TimeStamp = /54848F1E;
 Reference = P6;
 ValeurCmp = bRT-;
-IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
 BeginCmp
 TimeStamp = /5495EB0E;
 Reference = P7;
 ValeurCmp = SER_RX;
-IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
 BeginCmp
 TimeStamp = /5495EA4A;
 Reference = P8;
 ValeurCmp = SER_TX;
-IdModule  = Wire_Pads:SolderWirePad_single_1mmDrill;
+IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
 BeginCmp
@@ -136,7 +136,7 @@ EndCmp
 BeginCmp
 TimeStamp = /54835112;
 Reference = R2;
-ValeurCmp = 24.9k;
+ValeurCmp = 19.1k;
 IdModule  = SMD_Packages:SMD-0402_r;
 EndCmp
 
@@ -172,6 +172,13 @@ BeginCmp
 TimeStamp = /548E400E;
 Reference = R7;
 ValeurCmp = 100k;
+IdModule  = SMD_Packages:SMD-0402_r;
+EndCmp
+
+BeginCmp
+TimeStamp = /54ACB400;
+Reference = R8;
+ValeurCmp = 10k;
 IdModule  = SMD_Packages:SMD-0402_r;
 EndCmp
 
@@ -262,7 +269,7 @@ EndCmp
 BeginCmp
 TimeStamp = /548C64ED;
 Reference = U2;
-ValeurCmp = MCP73831;
+ValeurCmp = MCP73832;
 IdModule  = SMD_Packages:SOT-23-5;
 EndCmp
 

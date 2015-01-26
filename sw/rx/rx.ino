@@ -8,7 +8,7 @@ This code is responsible for what needs to happen in the receiver:
 */
 
 // Define this to send debugging data out via Serial.
-#define DEBUG
+//#define DEBUG
 
 // Define exactly one of CONS_NES or CONS_SNES.  This controls exactly
 // which wire protocol will be delivered to the attached console.
@@ -19,6 +19,7 @@ This code is responsible for what needs to happen in the receiver:
 #define EEPROM_RF_ADDR 0x01 /* Five bytes, the RF address. */
 
 #define BLINK_INTERVAL 333
+#define DATA_MIN_INTERVAL 2048
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -34,6 +35,12 @@ This code is responsible for what needs to happen in the receiver:
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
+#define PIN_LATCH _BV(2)
+#define PIN_CLOCK _BV(3)
+#define PIN_DATA _BV(4)
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
 enum LedState {
   OFF,
   GREEN_SOLID,
@@ -46,41 +53,44 @@ enum LedState {
 
 RF24 radio(10, 9);  // CE, CS pins
 
-volatile uint8_t gLatched = 0;
-volatile uint16_t gRfData = 0xFFFF;
-volatile uint16_t gConsData = 0xFFFF;
-
 LedState gLedState = YELLOW_BLINK_ON;
 unsigned long gLastDataTime = 0;
 unsigned long gNextLedBlinkTime = 0;
 
+volatile uint16_t gRfData = 0xFFFF;
+
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 void ISR_latch() {
-  gLatched = 1;
+  // This ISR is attached at the highest possible priority.  Since the
+  // NES data protocol is very timing sensitive, the whole thing runs inside
+  // this handler.
 
   // Copy the RF button data into the console data.
-  gConsData = gRfData;
+  uint16_t data = gRfData;
+  // Prime the data pin high (not asserting ground).
+  PORTD &= PIN_DATA;
 
-  // Immediately present the first bit of data (CLOCK is already high for
-  // the first latched pulse).
-  setDataLine();
-}
+  for (uint8_t i = 0; i < 12; i++) {
+    // Console is reading data now.  Wait for clock to rise.
+    while ( !(PIND & PIN_CLOCK) ) { }
 
+    // Set data pin for this bit.
+    if (data & 0x01) {
+      PORTD |= PIN_DATA;
+    } else {
+      PORTD &= ~PIN_DATA;
+    }
+    // Shift in next LSB of data.
+    data = data >> 1;
 
-void ISR_clock() {
-  // On each rising edge of CLOCK, set the next data bit.
-  setDataLine();
-}
-
-
-inline void setDataLine() {
-  if (gConsData & 0x01) {
-    PORTD |= _BV(4);
-  } else {
-    PORTD &= ~_BV(4);
+    // Wait for clock to drop.  (Console will read DATA when CLOCK drops.)
+    while (PIND & PIN_CLOCK) { }
   }
-  gConsData = gConsData >> 1;
+
+  // Force pin high for the rest of the cycle.  These bits aren't used for
+  // normal controllers.
+  PORTD &= PIN_DATA;
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -93,7 +103,7 @@ void lightLed(int ledState) {
   }
 
   // Set both off.
-  PORTC &= 0xF9;
+  PORTC &= ~(_BV(1) | _BV(2));
   // Then just the right one on.
   switch (ledState) {
   case GREEN_BLINK_OFF:
@@ -105,12 +115,12 @@ void lightLed(int ledState) {
   case GREEN_BLINK_ON:
     if (switchBlink) gLedState = GREEN_BLINK_OFF;
   case GREEN_SOLID:
-    PORTC |= 0x04;
+    PORTC |= _BV(1);
     break;
   case YELLOW_BLINK_ON:
     if (switchBlink) gLedState = YELLOW_BLINK_OFF;
   case YELLOW_SOLID:
-    PORTC |= 0x02;
+    PORTC |= _BV(2);
     break;
   }
 }
@@ -126,7 +136,7 @@ void loop(void) {
   unsigned long now = millis();
   uint16_t data;
 
-  if (gLastDataTime && (gLastDataTime + 1536 > now)) {
+  if (gLastDataTime && (gLastDataTime + DATA_MIN_INTERVAL > now)) {
     gLedState = GREEN_SOLID;
   } else {
     gLedState = YELLOW_SOLID;
@@ -180,12 +190,6 @@ void loop(void) {
     printf("Data: %04x\n", gRfData);
   }
   #endif
-
-  if (gLatched) {
-    gLatched = 0;
-    // DEV: Twiddle LED on latch.
-    PORTD ^= _BV(6);
-  }
 }
 
 
@@ -209,6 +213,7 @@ void setup() {
   for (int i = 0; i < 5; i++) {
     address[i] = EEPROM.read(EEPROM_RF_ADDR + i);
   }
+
   radio.stopListening();
   radio.openReadingPipe(0, address);
   radio.startListening();
@@ -216,18 +221,14 @@ void setup() {
   // The LED indicator is hooked up to pins PC1 and PC2.
   DDRC |= _BV(1) | _BV(2);
   // The DATA pin is PD4.
-  DDRD |= _BV(4);
+  DDRD |= PIN_DATA;
 
   // The CLOCK and LATCH signals should be pullup enabled inputs.
-  DDRD &= ~(_BV(2) | _BV(3));
-  PORTD |= _BV(2) | _BV(3);
+  DDRD &= ~(PIN_LATCH | PIN_CLOCK);
+  PORTD |= PIN_LATCH | PIN_CLOCK;
 
   // DATA output is fully interrupt driven, from LATCH and CLOCK.
   attachInterrupt(0, ISR_latch, RISING);
-  attachInterrupt(1, ISR_clock, RISING);
-
-  // DEV: LED indicator on PD6.
-  DDRD |= _BV(6);
 
   #ifdef DEBUG
   printf("\n");

@@ -1,0 +1,39 @@
+TX:
+
+All 0402 capacitors and resistors:
+
+C 0.1u * 4
+C 4.7u * 2
+C 1u
+
+R 10k * 4
+R 19.1k
+R 180
+R 300k
+R 100k
+
+One each:
+
+MCU: ATMEGA328A TQPF-32
+Voltage regulator: TCR2EF25,LM(CT SOT-23-5
+Li-ion charger: MCP73832T-2ACI/OT SOT-23-5
+Voltage detector: BD49K30G-TL SSOP-3
+TVS: VC060305A150DP 0603
+ISP Header: M20-9980345
+Illuminated pushbutton: WBL2UEEGYQR05CLR
+
+RX:
+
+All 0402 capacitors and resistors:
+
+C 0.1u * 4
+C 1u
+
+R 10k * 2
+R 180
+
+One each:
+
+MCU: ATMEGA328A TQPF-32
+Bi-color LED: WP59GYW
+ISP Header: M20-9980345
