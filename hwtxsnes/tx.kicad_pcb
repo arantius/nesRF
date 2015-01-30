@@ -1474,7 +1474,7 @@
   (segment (start 85.598 32.4104) (end 81.8388 32.4104) (width 0.381) (layer F.Cu) (net 2) (tstamp 54C8021C))
   (via (at 81.8388 32.4104) (size 0.889) (layers F.Cu B.Cu) (net 2))
   (via (at 80.3656 32.4104) (size 0.889) (layers F.Cu B.Cu) (net 2))
-  (segment (start 90.7288 27.2796) (end 92.837 27.2796) (width 0.381) (layer F.Cu) (net 2) (status 800000))
+  (segment (start 90.7288 27.2796) (end 92.837 27.2796) (width 0.381) (layer F.Cu) (net 2))
   (segment (start 107.254869 52.109183) (end 107.254869 51.319286) (width 0.381) (layer F.Cu) (net 2))
   (segment (start 107.254869 51.319286) (end 106.300814 50.365231) (width 0.381) (layer F.Cu) (net 2) (tstamp 54C80205))
   (segment (start 83.378 42.196) (end 83.378 41.717) (width 0.381) (layer F.Cu) (net 2))
