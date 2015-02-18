@@ -35,9 +35,9 @@ This code is responsible for what needs to happen in the receiver:
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-#define PIN_LATCH _BV(2)
-#define PIN_CLOCK _BV(3)
-#define PIN_DATA _BV(4)
+#define PIN_LATCH _BV(2)  // Pin D2
+#define PIN_CLOCK _BV(3)  // Pin D3
+#define PIN_DATA _BV(3)  // Pin C3
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -69,7 +69,7 @@ void ISR_latch() {
   // Copy the RF button data into the console data.
   uint16_t data = gRfData;
   // Prime the data pin high (not asserting ground).
-  PORTD &= PIN_DATA;
+  PORTC &= PIN_DATA;
 
   for (uint8_t i = 0; i < 12; i++) {
     // Console is reading data now.  Wait for clock to rise.
@@ -77,9 +77,9 @@ void ISR_latch() {
 
     // Set data pin for this bit.
     if (data & 0x01) {
-      PORTD |= PIN_DATA;
+      PORTC |= PIN_DATA;
     } else {
-      PORTD &= ~PIN_DATA;
+      PORTC &= ~PIN_DATA;
     }
     // Shift in next LSB of data.
     data = data >> 1;
@@ -90,7 +90,7 @@ void ISR_latch() {
 
   // Force pin high for the rest of the cycle.  These bits aren't used for
   // normal controllers.
-  PORTD &= PIN_DATA;
+  PORTC &= PIN_DATA;
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -220,8 +220,8 @@ void setup() {
 
   // The LED indicator is hooked up to pins PC1 and PC2.
   DDRC |= _BV(1) | _BV(2);
-  // The DATA pin is PD4.
-  DDRD |= PIN_DATA;
+  // The DATA pin is PC3.
+  DDRC |= PIN_DATA;
 
   // The CLOCK and LATCH signals should be pullup enabled inputs.
   DDRD &= ~(PIN_LATCH | PIN_CLOCK);
