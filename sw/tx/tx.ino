@@ -12,7 +12,7 @@ This code is responsible for what needs to happen in the controller:
 */
 
 // Define this to send debugging data out via Serial.
-//#define DEBUG
+#define DEBUG
 
 // Addresses of data stored in EEPROM.
 #define EEPROM_RF_CHAN 0x00 /* One byte, the RF channel. */
@@ -87,7 +87,7 @@ void loop(void) {
     event = 0;
 
     power_adc_enable();
-    uint16_t batLvl = analogRead(0);
+    uint16_t batLvl = analogRead(7);
     power_adc_disable();
 
     // Read the state of all input pins into btnData.
@@ -115,7 +115,8 @@ void loop(void) {
     printf("%s!\n", ok ? "ok" : "fail");
     #endif
 
-    // Semi-dev flash green LED during transmit.
+    // Battery low: Solid yellow status.
+    // Battery ok: Flash green/yellow with good/bad link.
     if (batLvl < bat_low_thresh) {
       lightLedYellow();
     } else if (led_status) {

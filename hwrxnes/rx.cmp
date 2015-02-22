@@ -1,0 +1,143 @@
+Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 2/21/2015 1:04:49 PM
+
+BeginCmp
+TimeStamp = /54891DF6;
+Reference = C1;
+ValeurCmp = 0.1u;
+IdModule  = Capacitors_SMD:C_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DEAAE;
+Reference = C2;
+ValeurCmp = 0.1u;
+IdModule  = Capacitors_SMD:C_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /54890E48;
+Reference = C3;
+ValeurCmp = 0.1u;
+IdModule  = Capacitors_SMD:C_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /548DB3A2;
+Reference = C4;
+ValeurCmp = 0.1u;
+IdModule  = Capacitors_SMD:C_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /548FB6E3;
+Reference = C5;
+ValeurCmp = 1u;
+IdModule  = Capacitors_SMD:C_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E8C1E0;
+Reference = C6;
+ValeurCmp = 22p;
+IdModule  = Capacitors_SMD:C_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E8C207;
+Reference = C7;
+ValeurCmp = 22p;
+IdModule  = Capacitors_SMD:C_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /548A6224;
+Reference = D1;
+ValeurCmp = BI_LED;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /548921E2;
+Reference = IC1;
+ValeurCmp = ATMEGA328-A;
+IdModule  = nesRF:TQFP-32;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E8B2D5;
+Reference = P1;
+ValeurCmp = PORT1;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x05;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E8B39D;
+Reference = P2;
+ValeurCmp = PORT2;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x07;
+EndCmp
+
+BeginCmp
+TimeStamp = /5489134F;
+Reference = P3;
+ValeurCmp = ISP;
+IdModule  = Pin_Headers:Pin_Header_Straight_2x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /54890EED;
+Reference = P4;
+ValeurCmp = nRF;
+IdModule  = nesRF:nRF_Header_2x04;
+EndCmp
+
+BeginCmp
+TimeStamp = /5495E84E;
+Reference = P5;
+ValeurCmp = RX;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /5495E867;
+Reference = P6;
+ValeurCmp = TX;
+IdModule  = nesRF:Small_1x_Pad;
+EndCmp
+
+BeginCmp
+TimeStamp = /54891382;
+Reference = R1;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /54891606;
+Reference = R2;
+ValeurCmp = 10k;
+IdModule  = Resistors_SMD:R_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /548A749B;
+Reference = R3;
+ValeurCmp = 180;
+IdModule  = Resistors_SMD:R_0402;
+EndCmp
+
+BeginCmp
+TimeStamp = /548916E3;
+Reference = U1;
+ValeurCmp = TCR2EF;
+IdModule  = nesRF:SOT23-5;
+EndCmp
+
+BeginCmp
+TimeStamp = /54E8C18F;
+Reference = X1;
+ValeurCmp = CRYSTAL;
+IdModule  = nesRF:TSX-3225;
+EndCmp
+
+EndListe
