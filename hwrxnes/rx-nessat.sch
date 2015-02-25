@@ -30,7 +30,7 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:nesrf
-LIBS:rx-cache
+LIBS:rx-nessat-cache
 EELAYER 25 0
 EELAYER END
 $Descr User 8000 6500
@@ -574,7 +574,6 @@ Text Label 4250 2400 0    60   ~ 0
 XTAL1
 Text Label 4250 2500 0    60   ~ 0
 XTAL2
-NoConn ~ 3900 3800
 Wire Wire Line
 	6250 1500 6250 2500
 Connection ~ 6250 2450
@@ -619,6 +618,7 @@ Text Label 6800 3050 2    60   ~ 0
 D4_2
 Text Label 3900 2750 0    60   ~ 0
 D3_2
-Text Label 3900 2850 0    60   ~ 0
+Text Label 3900 3800 0    60   ~ 0
 D4_2
+NoConn ~ 3900 2850
 $EndSCHEMATC
