@@ -194,9 +194,9 @@ void setup() {
   radio.setCRCLength(RF24_CRC_16);
   radio.setChannel(EEPROM.read(EEPROM_RF_CHAN));
   radio.setDataRate(RF24_1MBPS);
-  radio.setPALevel(RF24_PA_LOW);
+  radio.setPALevel(RF24_PA_MAX);
   radio.setPayloadSize(sizeof(uint16_t));
-  radio.setRetries(5, 5);  // delay, retries
+  radio.setRetries(7, 10);  // delay, retries
 
   byte address[5] = {};
   for (int i = 0; i < 5; i++) {
