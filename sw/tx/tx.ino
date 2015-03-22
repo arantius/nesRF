@@ -12,7 +12,7 @@ This code is responsible for what needs to happen in the controller:
 */
 
 // Define this to send debugging data out via Serial.
-#define DEBUG
+//#define DEBUG
 
 // Addresses of data stored in EEPROM.
 #define EEPROM_RF_CHAN 0x00 /* One byte, the RF channel. */
