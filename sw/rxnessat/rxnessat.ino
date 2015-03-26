@@ -84,16 +84,13 @@ volatile uint8_t gData = 0xFFFF;
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-void ISR_latch() {
-  return;
+void ISR_latch1() {
   // This ISR is attached at the highest possible priority.  Since the
   // NES data protocol is very timing sensitive, the whole thing runs inside
   // this handler.
 
   // Copy the RF button data into the console data.
   uint8_t data = gData;
-  // Prime the data pin high (not asserting ground).
-  PORT_D0P1 &= PIN_D0P1;
 
   for (uint8_t i = 0; i < 8; i++) {
     // Console is reading data now.  Wait for clock to rise.
@@ -114,7 +111,7 @@ void ISR_latch() {
 
   // Force pin high for the rest of the cycle.  These bits aren't used for
   // normal controllers.
-  PORT_D0P1 &= PIN_D0P1;
+  PORT_D0P1 |= PIN_D0P1;
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -239,10 +236,10 @@ void setup() {
   PORTD |= PIN_CLK1;
   PORTD |= PIN_LATCH1 | PIN_LATCH2 | PIN_CLK2;
 
-  // DATA output is fully interrupt driven, from LATCH.
-  attachInterrupt(0, ISR_latch, RISING);
   // Prime the data pin high (not asserting ground).
-  PORT_D0P1 &= PIN_D0P1;
+  PORT_D0P1 |= PIN_D0P1;
+  // DATA output is fully interrupt driven, from LATCH.
+  attachInterrupt(0, ISR_latch1, RISING);
 
   #ifdef DEBUG
   printf("\n");
