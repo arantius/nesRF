@@ -8,7 +8,7 @@ This code is responsible for what needs to happen in the receiver:
 */
 
 // Define this to send debugging data out via Serial.
-#define DEBUG
+//#define DEBUG
 
 // Addresses of data stored in EEPROM.
 #define EEPROM_RF_CHAN 0x00 /* One byte, the RF channel. */
@@ -62,10 +62,10 @@ This code is responsible for what needs to happen in the receiver:
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-
 RF24 radio(10, 14);  // CE, CS pins
-unsigned long gLastDataTime = 0;
-volatile uint8_t gData = 0xFF;
+unsigned long gDataTimeMax = 0;
+unsigned long gDataTime[2] = {0, 0};
+volatile uint8_t gData[2] = {0xFF, 0xFF};
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -75,13 +75,25 @@ volatile uint8_t gData = 0xFF;
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-void ISR_latch1() {
-  // This ISR is attached at the highest possible priority.  Since the
-  // NES data protocol is very timing sensitive, the whole thing runs inside
-  // this handler.
+void ISR_latch() {
+  // Because there's a very small (around 6us) window from latch rising
+  // to the first bit of data, hard-code setting that first bit ASAP.
+  if (gData[0] & 0x01) {
+    PORT_D0P1 |= PIN_D0P1;
+  } else {
+    PORT_D0P1 &= ~PIN_D0P1;
+  }
 
-  // Copy the RF button data into the console data.
-  uint8_t data = gData;
+  if (gData[1] != 0xff) {
+    dataTwo();
+  } else {
+    dataOne();
+  }
+}
+
+// Transmit data for player one only.
+void dataOne() {
+  uint8_t data = gData[0];
 
   for (uint8_t i = 0; i < 8; i++) {
     // Console is reading data now.  Wait for clock to rise.
@@ -101,6 +113,9 @@ void ISR_latch1() {
     // otherwise we rarely miss it, and end up blocking forever for a clock
     // pulse that doesn't come.  But, unroll the loop so that we don't spend so
     // much time processing the loop itself that we regularly miss the clock.
+    
+    // TODO: 48 cycles assumes ~10ms between clock pulses.  When two players'
+    // data is being read, in parallel, each cycle takes twice as long.
     for (uint8_t j = 0; j < 48; j++) {
       if (!(PINC & PIN_CLK1)) break;
       if (!(PINC & PIN_CLK1)) break;
@@ -113,20 +128,83 @@ void ISR_latch1() {
   PORT_D0P1 |= PIN_D0P1;
 }
 
+// Transmit data for player one and two.
+void dataTwo() {
+  uint8_t data1 = gData[0];
+  uint8_t data2 = gData[1];
+
+  for (uint8_t i = 0; i < 8; i++) {
+    // Player 1.
+    while (!(PINC & PIN_CLK1)) ;;
+    if (data1 & 0x01) {
+      PORT_D0P1 |= PIN_D0P1;
+    } else {
+      PORT_D0P1 &= ~PIN_D0P1;
+    }
+    data1 = data1 >> 1;
+    for (uint8_t j = 0; j < 48; j++) {
+      if (!(PINC & PIN_CLK1)) break;
+      if (!(PINC & PIN_CLK1)) break;
+      if (!(PINC & PIN_CLK1)) break;
+      if (!(PINC & PIN_CLK1)) break;
+    }
+    // Player 2.
+    while (!(PIND & PIN_CLK2)) ;;
+    if (data2 & 0x01) {
+      PORT_D0P2 |= PIN_D0P2;
+    } else {
+      PORT_D0P2 &= ~PIN_D0P2;
+    }
+    data2 = data2 >> 1;
+    for (uint8_t j = 0; j < 48; j++) {
+      if (!(PIND & PIN_CLK2)) break;
+      if (!(PIND & PIN_CLK2)) break;
+      if (!(PIND & PIN_CLK2)) break;
+      if (!(PIND & PIN_CLK2)) break;
+    }
+  }
+
+  // Force data high until the next cycle.
+  PORT_D0P1 |= PIN_D0P1;
+  PORT_D0P2 |= PIN_D0P2;
+}
+
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 void loop(void) {
   unsigned long now = millis();
 
-  if (gLastDataTime && (gLastDataTime + DATA_MIN_INTERVAL > now)) {
+  // Light the LED as per the last time any data was received.
+  if (gDataTimeMax && (gDataTimeMax + DATA_MIN_INTERVAL > now)) {
     lightLedGrn();
   } else {
     lightLedYel();
   }
 
+  // Reset either player's data if it's been too long since last data.
+  for (uint8_t i = 0; i < 2; i++) {
+    if (gDataTime[i] && (gDataTime[i] + DATA_MIN_INTERVAL < now)) {
+      gDataTime[i] = 0;
+      gDataTimeMax = gDataTime[2 - i];
+      gData[i] = 0xFF;
+    }
+  }
+
   // TODO: Set appropriate masks and just read RF_IRQ pin to see pending data?
   uint16_t data_raw=0;
+  uint8_t pipe;
   while (radio.available()) {
+    uint8_t status = radio.get_status();
+    pipe = (status >> 1) & 0x07;
+    #ifdef DEBUG
+    printf("Reading from pipe number %d ... ", pipe);
+    #endif
+    if (pipe > 1) {
+      #ifdef DEBUG
+      printf("Panic!  Data on unsupported pipe!\n");
+      #endif
+      return;
+    }
     radio.read(&data_raw, sizeof(data_raw));
   }
 
@@ -148,8 +226,13 @@ void loop(void) {
     printf("RX got %04x; Translt. %02x\n", data_raw, data_nes);
     #endif
 
-    gData = data_nes;
-    gLastDataTime = now;
+    gData[pipe] = data_nes;
+    gDataTimeMax = now;
+    gDataTime[pipe] = now;
+
+    #ifdef DEBUG
+    printf("gdata[0] = %02x; gdata[1] = %02x\n", gData[0], gData[1]);
+    #endif
   }
 }
 
@@ -177,6 +260,12 @@ void setup() {
 
   radio.stopListening();
   radio.openReadingPipe(0, address);
+  address[0]++;
+  radio.openReadingPipe(1, address);
+  address[0]++;
+  radio.openReadingPipe(2, address);
+  address[0]++;
+  radio.openReadingPipe(3, address);
   radio.startListening();
 
   // The LED indicator is hooked up to pins PB0 (Green) and PD7 (Yellow).
@@ -195,8 +284,8 @@ void setup() {
   // Prime the data pin high (not asserting ground).
   PORT_D0P1 |= PIN_D0P1;
   // DATA output is fully interrupt driven, from LATCH.
-  attachInterrupt(0, ISR_latch1, RISING);
-  // TODO: Handle players 2 through 4.
+  attachInterrupt(0, ISR_latch, RISING);
+  // TODO: Handle players 3 through 4.
 
   #ifdef DEBUG
   printf("\n");

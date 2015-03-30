@@ -186,6 +186,18 @@ void setup() {
     address[i] = EEPROM.read(EEPROM_RF_ADDR + i);
   }
 
+  // Change address (player number) depending on button,
+  // held at power on time.
+  if ((PINB & _BV(0)) == 0) {  // y
+    address[0] += 4;
+  } else if ((PINB & _BV(6)) == 0) {  // x
+    address[0] += 3;
+  } else if ((PIND & _BV(3)) == 0) {  // b
+    address[0] += 2;
+  } else if ((PIND & _BV(4)) == 0) {  // a
+    address[0] += 1;
+  }
+
   radio.stopListening();
   radio.openWritingPipe(address);
 
