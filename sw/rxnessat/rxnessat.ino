@@ -66,6 +66,7 @@ RF24 radio(10, 14);  // CE, CS pins
 unsigned long gDataTimeMax = 0;
 unsigned long gDataTime[2] = {0, 0};
 volatile uint8_t gData[2] = {0xFF, 0xFF};
+uint8_t gShiftBit[2] = {1, 1};
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -75,99 +76,56 @@ volatile uint8_t gData[2] = {0xFF, 0xFF};
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
+// TODO: Handle players 3 through 4.
 void ISR_latch() {
-  // Because there's a very small (around 6us) window from latch rising
-  // to the first bit of data, hard-code setting that first bit ASAP.
-  if (gData[0] & 0x01) {
+  // NES protocol is, for each read: one wide high-going LATCH pulse,
+  // followed by eight narrow low-going CLK pulses.  While CLK is low,
+  // the console is reading data.
+
+  // Initialize the bit mask.
+  gShiftBit[0] = 1;
+  gShiftBit[1] = 1;
+  // Set the initial data line values.
+  ISR_clock1();
+  ISR_clock2();
+}
+
+inline void ISR_clock1() {
+  // If clock is low we caught a falling edge; cancel and wait for rising.
+  if (!(PINC & PIN_CLK1)) return;
+
+  if ((gData[0] & gShiftBit[0]) == gShiftBit[0]) {
     PORT_D0P1 |= PIN_D0P1;
   } else {
     PORT_D0P1 &= ~PIN_D0P1;
   }
 
-  if (gData[1] != 0xff) {
-    dataTwo();
+  gShiftBit[0] <<= 1;
+
+  // In case we caught the falling edge, but couldn't read clock until
+  // it rose, clear the interrupt flag so we don't re-execute on rising.
+  PCIFR |= _BV(PCIF1);
+}
+
+inline void ISR_clock2() {
+  // If clock is low we caught a falling edge; cancel and wait for rising.
+  if (!(PIND & PIN_CLK2)) return;
+
+  if ((gData[1] & gShiftBit[1]) == gShiftBit[1]) {
+    PORT_D0P2 |= PIN_D0P2;
   } else {
-    dataOne();
-  }
-}
-
-// Transmit data for player one only.
-void dataOne() {
-  uint8_t data = gData[0];
-
-  for (uint8_t i = 0; i < 8; i++) {
-    // Console is reading data now.  Wait for clock to rise.
-    while (!(PINC & PIN_CLK1)) ;;
-
-    // Set data pin for this bit.
-    if (data & 0x01) {
-      PORT_D0P1 |= PIN_D0P1;
-    } else {
-      PORT_D0P1 &= ~PIN_D0P1;
-    }
-    // Shift in next LSB of data.
-    data = data >> 1;
-
-    // Wait for clock to drop.  The NES sends a low-going clock pulse only
-    // about a half a microsecond wide.  Limit how long to wait for it, as
-    // otherwise we rarely miss it, and end up blocking forever for a clock
-    // pulse that doesn't come.  But, unroll the loop so that we don't spend so
-    // much time processing the loop itself that we regularly miss the clock.
-    
-    // TODO: 48 cycles assumes ~10ms between clock pulses.  When two players'
-    // data is being read, in parallel, each cycle takes twice as long.
-    for (uint8_t j = 0; j < 48; j++) {
-      if (!(PINC & PIN_CLK1)) break;
-      if (!(PINC & PIN_CLK1)) break;
-      if (!(PINC & PIN_CLK1)) break;
-      if (!(PINC & PIN_CLK1)) break;
-    }
+    PORT_D0P2 &= ~PIN_D0P2;
   }
 
-  // Force data high until the next cycle.
-  PORT_D0P1 |= PIN_D0P1;
+  gShiftBit[1] <<= 1;
+
+  // In case we caught the falling edge, but couldn't read clock until
+  // it rose, clear the interrupt flag so we don't re-execute on rising.
+  PCIFR |= _BV(PCIF2);
 }
 
-// Transmit data for player one and two.
-void dataTwo() {
-  uint8_t data1 = gData[0];
-  uint8_t data2 = gData[1];
-
-  for (uint8_t i = 0; i < 8; i++) {
-    // Player 1.
-    while (!(PINC & PIN_CLK1)) ;;
-    if (data1 & 0x01) {
-      PORT_D0P1 |= PIN_D0P1;
-    } else {
-      PORT_D0P1 &= ~PIN_D0P1;
-    }
-    data1 = data1 >> 1;
-    for (uint8_t j = 0; j < 48; j++) {
-      if (!(PINC & PIN_CLK1)) break;
-      if (!(PINC & PIN_CLK1)) break;
-      if (!(PINC & PIN_CLK1)) break;
-      if (!(PINC & PIN_CLK1)) break;
-    }
-    // Player 2.
-    while (!(PIND & PIN_CLK2)) ;;
-    if (data2 & 0x01) {
-      PORT_D0P2 |= PIN_D0P2;
-    } else {
-      PORT_D0P2 &= ~PIN_D0P2;
-    }
-    data2 = data2 >> 1;
-    for (uint8_t j = 0; j < 48; j++) {
-      if (!(PIND & PIN_CLK2)) break;
-      if (!(PIND & PIN_CLK2)) break;
-      if (!(PIND & PIN_CLK2)) break;
-      if (!(PIND & PIN_CLK2)) break;
-    }
-  }
-
-  // Force data high until the next cycle.
-  PORT_D0P1 |= PIN_D0P1;
-  PORT_D0P2 |= PIN_D0P2;
-}
+SIGNAL(PCINT1_vect) { ISR_clock1(); }
+SIGNAL(PCINT2_vect) { ISR_clock2(); }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -226,6 +184,8 @@ void loop(void) {
     printf("RX got %04x; Translt. %02x\n", data_raw, data_nes);
     #endif
 
+    // TODO: X/Y as turbo for A/B.
+
     gData[pipe] = data_nes;
     gDataTimeMax = now;
     gDataTime[pipe] = now;
@@ -281,11 +241,12 @@ void setup() {
   PORTD |= PIN_CLK1;
   PORTD |= PIN_LATCH1 | PIN_LATCH2 | PIN_CLK2;
 
-  // Prime the data pin high (not asserting ground).
-  PORT_D0P1 |= PIN_D0P1;
-  // DATA output is fully interrupt driven, from LATCH.
+  // LATCH1 interrupt.
   attachInterrupt(0, ISR_latch, RISING);
-  // TODO: Handle players 3 through 4.
+  // CLK change interrupts.
+  PCICR = _BV(PCIE1) | _BV(PCIE2);
+  PCMSK1 = _BV(PCINT13);  // CLK1
+  PCMSK2 = _BV(PCINT22);  // CLK2
 
   #ifdef DEBUG
   printf("\n");
