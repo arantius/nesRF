@@ -65,8 +65,11 @@ This code is responsible for what needs to happen in the receiver:
 RF24 radio(10, 14);  // CE, CS pins
 unsigned long gDataTimeMax = 0;
 unsigned long gDataTime[2] = {0, 0};
+uint16_t gNextTurbo = 0;
 volatile uint8_t gData[2] = {0xFF, 0xFF};
 uint8_t gShiftBit[2] = {1, 1};
+uint8_t gTurboActive = 0;
+uint8_t gTurboMask[2] = {0xFF, 0xFF};
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -94,10 +97,12 @@ inline void ISR_clock1() {
   // If clock is low we caught a falling edge; cancel and wait for rising.
   if (!(PINC & PIN_CLK1)) return;
 
-  if ((gData[0] & gShiftBit[0]) == gShiftBit[0]) {
-    PORT_D0P1 |= PIN_D0P1;
-  } else {
+  if ( (gData[0] & gShiftBit[0]) == 0
+      || (gTurboActive && ((gTurboMask[0] & gShiftBit[0]) == 0))
+  ) {
     PORT_D0P1 &= ~PIN_D0P1;
+  } else {
+    PORT_D0P1 |= PIN_D0P1;
   }
 
   gShiftBit[0] <<= 1;
@@ -111,10 +116,12 @@ inline void ISR_clock2() {
   // If clock is low we caught a falling edge; cancel and wait for rising.
   if (!(PIND & PIN_CLK2)) return;
 
-  if ((gData[1] & gShiftBit[1]) == gShiftBit[1]) {
-    PORT_D0P2 |= PIN_D0P2;
-  } else {
+  if ( (gData[1] & gShiftBit[1]) == 0
+      || (gTurboActive && ((gTurboMask[1] & gShiftBit[1]) == 0))
+  ) {
     PORT_D0P2 &= ~PIN_D0P2;
+  } else {
+    PORT_D0P2 |= PIN_D0P2;
   }
 
   gShiftBit[1] <<= 1;
@@ -148,8 +155,14 @@ void loop(void) {
     }
   }
 
+  // Flip turbo status on a ~30Hz period.
+  if (now > gNextTurbo) {
+    gNextTurbo = now + 33;
+    gTurboActive = ~gTurboActive;
+  }
+
   // TODO: Set appropriate masks and just read RF_IRQ pin to see pending data?
-  uint16_t data_raw=0;
+  uint16_t data_raw = 0;
   uint8_t pipe;
   while (radio.available()) {
     uint8_t status = radio.get_status();
@@ -172,6 +185,7 @@ void loop(void) {
 
     // Translate RF data to NES data.
     uint8_t data_nes = 0x00;
+    uint8_t turbo_mask = 0xFF;
     data_nes = data_nes << 1; if (data_raw & _BV(7)) data_nes |= 1; // Right
     data_nes = data_nes << 1; if (data_raw & _BV(6)) data_nes |= 1; // Left
     data_nes = data_nes << 1; if (data_raw & _BV(5)) data_nes |= 1; // Down
@@ -179,9 +193,13 @@ void loop(void) {
     data_nes = data_nes << 1; if (data_raw & _BV(3)) data_nes |= 1; // Start
     data_nes = data_nes << 1; if (data_raw & _BV(2)) data_nes |= 1; // Select
     data_nes = data_nes << 1; if (data_raw & _BV(0)) data_nes |= 1; // B
+    if (!(data_raw & _BV(1))) turbo_mask &= ~_BV(1); // Y = B Turbo
     data_nes = data_nes << 1; if (data_raw & _BV(8)) data_nes |= 1; // A
+    if (!(data_raw & _BV(9))) turbo_mask &= ~_BV(0); // X = A Turbo
+
     #ifdef DEBUG
-    printf("RX got %04x; Translt. %02x\n", data_raw, data_nes);
+    printf("RX got %04x; Translt. %02x; Turbo %02x\n",
+        data_raw, data_nes, turbo_mask);
     #endif
 
     // TODO: X/Y as turbo for A/B.
@@ -189,10 +207,7 @@ void loop(void) {
     gData[pipe] = data_nes;
     gDataTimeMax = now;
     gDataTime[pipe] = now;
-
-    #ifdef DEBUG
-    printf("gdata[0] = %02x; gdata[1] = %02x\n", gData[0], gData[1]);
-    #endif
+    gTurboMask[pipe] = turbo_mask;
   }
 }
 
