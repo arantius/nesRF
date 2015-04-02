@@ -115,13 +115,23 @@ void loop(void) {
     printf("%s!\n", ok ? "ok" : "fail");
     #endif
 
-    // Battery low: Solid yellow status.
-    // Battery ok: Flash green/yellow with good/bad link.
-    if (batLvl < bat_low_thresh) {
+    if (batLvl == 0) {
+      // Running from external power.
+      if (PIND & _BV(5)) {
+        // Not charging: solid green.
+        lightLedGreen();
+      } else {
+        // Charging: solid yellow.
+        lightLedYellow();
+      }
+    } else if (batLvl < bat_low_thresh) {
+      // Battery low: Solid yellow status.
       lightLedYellow();
     } else if (led_status) {
+      // Battery ok: Flash green/yellow with good/bad link.
       ok ? lightLedGreen() : lightLedYellow();
     } else {
+      // Shouldn't happen, but otherwise light off.
       lightLedOff();
     }
   }
@@ -145,13 +155,15 @@ void setup() {
   //  PD0 Down
   //  PD3 B
   //  PD4 A
+  // Also there's:
+  //  PD5 CHRG_STAT
   // Make those pullup-enabled inputs.  But: there are other functions on
   // other pins of those ports, so ONLY these pins!
   DDRB &= ~(_BV(0) | _BV(6) | _BV(7));
   PORTB |= _BV(0) | _BV(6) | _BV(7);
   DDRC &= ~(_BV(0) | _BV(1) | _BV(2) | _BV(3) | _BV(4) | _BV(5));
   PORTC |= _BV(0) | _BV(1) | _BV(2) | _BV(3) | _BV(4) | _BV(5);
-  DDRD &= ~(_BV(0) | _BV(3) | _BV(4));
+  DDRD &= ~(_BV(0) | _BV(3) | _BV(4) | _BV(5));
   PORTD |= _BV(0) | _BV(3) | _BV(4);
   // Also, make only these pins trigger PCINT.
   PCICR = _BV(0) | _BV(1) | _BV(2);
