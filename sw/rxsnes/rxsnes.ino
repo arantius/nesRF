@@ -21,7 +21,6 @@ This code is responsible for what needs to happen in the receiver:
 
 #include <EEPROM.h>
 #include <SPI.h>
-#include <util/atomic.h>
 
 #include "nRF24L01.h"
 #include "RF24.h"
@@ -64,8 +63,6 @@ void ISR_latch() {
 
   // Copy the RF button data into the console data.
   uint16_t data = gRfData;
-  // Prime the data pin high (not asserting ground).
-  PORTC &= PIN_DATA;
 
   for (uint8_t i = 0; i < 12; i++) {
     // Console is reading data now.  Wait for clock to rise.
@@ -150,11 +147,9 @@ void loop(void) {
     printf("RX got %04x\n", data);
     #endif
 
-    ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
-      // Fix the first 4 bits high, then use the rest of the received data.
-      gRfData = 0xF000 | data;
-      // TODO: Use battery/sleeping status bits?
-    }
+    // Fix the first 4 bits high, then use the rest of the received data.
+    gRfData = 0xF000 | data;
+    // TODO: Use battery/sleeping status bits?
 
     gLastDataTime = now;
     lightLed();
