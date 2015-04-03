@@ -9,3 +9,6 @@ fuses:
 # Program EEPROM data.
 eeprom:
 	avrdude -p m328p -c usbasp -U eeprom:w:eeprom.hex:i
+# Program EEPROM data for second channel receiver.
+eeprom2:
+	avrdude -p m328p -c usbasp -U eeprom:w:eeprom2.hex:i
