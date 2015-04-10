@@ -1,52 +1,45 @@
-Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 1/4/2015 2:50:22 PM
+Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 4/10/2015 6:11:39 PM
 
 BeginCmp
 TimeStamp = /54890E48;
 Reference = C1;
 ValeurCmp = 0.1u;
-IdModule  = SMD_Packages:SMD-0402_c;
+IdModule  = Capacitors_SMD:C_0402;
 EndCmp
 
 BeginCmp
 TimeStamp = /54891DF6;
 Reference = C2;
-ValeurCmp = 1u;
-IdModule  = SMD_Packages:SMD-0402_c;
+ValeurCmp = 0.1u;
+IdModule  = Capacitors_SMD:C_0402;
 EndCmp
 
 BeginCmp
 TimeStamp = /548DB3A2;
 Reference = C3;
 ValeurCmp = 0.1u;
-IdModule  = SMD_Packages:SMD-0402_c;
-EndCmp
-
-BeginCmp
-TimeStamp = /548DEAAE;
-Reference = C4;
-ValeurCmp = 0.1u;
-IdModule  = SMD_Packages:SMD-0402_c;
+IdModule  = Capacitors_SMD:C_0402;
 EndCmp
 
 BeginCmp
 TimeStamp = /548FB6E3;
 Reference = C5;
 ValeurCmp = 1u;
-IdModule  = SMD_Packages:SMD-0402_c;
+IdModule  = Capacitors_SMD:C_0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /54A99077;
+TimeStamp = /55270662;
 Reference = C6;
 ValeurCmp = 22p;
-IdModule  = SMD_Packages:SMD-0402_c;
+IdModule  = Capacitors_SMD:C_0402;
 EndCmp
 
 BeginCmp
-TimeStamp = /54A98DBE;
+TimeStamp = /5527061D;
 Reference = C7;
 ValeurCmp = 22p;
-IdModule  = SMD_Packages:SMD-0402_c;
+IdModule  = Capacitors_SMD:C_0402;
 EndCmp
 
 BeginCmp
@@ -60,41 +53,41 @@ BeginCmp
 TimeStamp = /548921E2;
 Reference = IC1;
 ValeurCmp = ATMEGA328-A;
-IdModule  = SMD_Packages:TQFP-32;
+IdModule  = nesRF:TQFP-32;
 EndCmp
 
 BeginCmp
 TimeStamp = /548DB928;
 Reference = P1;
-ValeurCmp = +5v;
+ValeurCmp = +5v (Wht);
 IdModule  = nesRF:Small_1x_Pad;
 EndCmp
 
 BeginCmp
 TimeStamp = /548DB59E;
 Reference = P2;
-ValeurCmp = Clock;
+ValeurCmp = Clock (Yel);
 IdModule  = nesRF:Small_1x_Pad;
 EndCmp
 
 BeginCmp
 TimeStamp = /548DB66E;
 Reference = P3;
-ValeurCmp = Latch;
+ValeurCmp = Latch (Org);
 IdModule  = nesRF:Small_1x_Pad;
 EndCmp
 
 BeginCmp
 TimeStamp = /548DB68F;
 Reference = P4;
-ValeurCmp = Data;
+ValeurCmp = Data (Red);
 IdModule  = nesRF:Small_1x_Pad;
 EndCmp
 
 BeginCmp
 TimeStamp = /548DB6FB;
 Reference = P5;
-ValeurCmp = GND;
+ValeurCmp = GND (Brn);
 IdModule  = nesRF:Small_1x_Pad;
 EndCmp
 
@@ -109,7 +102,7 @@ BeginCmp
 TimeStamp = /5489134F;
 Reference = P7;
 ValeurCmp = ISP;
-IdModule  = Pin_Headers:Pin_Header_Straight_2x03;
+IdModule  = nesRF:ISP_POGO;
 EndCmp
 
 BeginCmp
@@ -130,32 +123,25 @@ BeginCmp
 TimeStamp = /54891382;
 Reference = R1;
 ValeurCmp = 10k;
-IdModule  = SMD_Packages:SMD-0402_r;
-EndCmp
-
-BeginCmp
-TimeStamp = /54891606;
-Reference = R2;
-ValeurCmp = 10k;
-IdModule  = SMD_Packages:SMD-0402_r;
+IdModule  = Resistors_SMD:R_0402;
 EndCmp
 
 BeginCmp
 TimeStamp = /548A749B;
 Reference = R3;
-ValeurCmp = 120;
-IdModule  = SMD_Packages:SMD-0402_r;
+ValeurCmp = 180;
+IdModule  = Resistors_SMD:R_0402;
 EndCmp
 
 BeginCmp
 TimeStamp = /548916E3;
 Reference = U1;
 ValeurCmp = TCR2EF;
-IdModule  = SMD_Packages:SOT-23-5;
+IdModule  = nesRF:SOT23-5;
 EndCmp
 
 BeginCmp
-TimeStamp = /54A98B41;
+TimeStamp = /55270266;
 Reference = X1;
 ValeurCmp = CRYSTAL;
 IdModule  = nesRF:TSX-3225;
