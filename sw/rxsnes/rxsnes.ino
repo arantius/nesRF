@@ -32,117 +32,58 @@ This code is responsible for what needs to happen in the receiver:
 
 #define PIN_LATCH _BV(2)  // Pin D2
 #define PIN_CLOCK _BV(3)  // Pin D3
-#define PIN_DATA _BV(3)  // Pin C3
+#define PIN_DATA _BV(2)  // Pin C3
+
+#define PORT_GRN PORTC
+#define PIN_GRN _BV(0)
+#define PORT_YEL PORTC
+#define PIN_YEL _BV(1)
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-enum LedState {
-  OFF,
-  GREEN_SOLID,
-  GREEN_BLINK_ON,
-  GREEN_BLINK_OFF,
-  YELLOW_SOLID,
-  YELLOW_BLINK_ON,
-  YELLOW_BLINK_OFF
-};
-
 RF24 radio(10, 9);  // CE, CS pins
 
-LedState gLedState = YELLOW_BLINK_ON;
 unsigned long gLastDataTime = 0;
-unsigned long gNextLedBlinkTime = 0;
-
 volatile uint16_t gRfData = 0xFFFF;
+uint16_t gShiftBit = 0x0001;
+
+// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
+
+#define lightLedOff() PORT_GRN &= ~PIN_GRN; PORT_YEL &= ~PIN_YEL;
+#define lightLedGrn() PORT_YEL &= ~PIN_YEL; PORT_GRN |= PIN_GRN;
+#define lightLedYel() PORT_GRN &= ~PIN_GRN; PORT_YEL |= PIN_YEL;
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 void ISR_latch() {
-  // This ISR is attached at the highest possible priority.  Since the
-  // NES data protocol is very timing sensitive, the whole thing runs inside
-  // this handler.
-
-  // Copy the RF button data into the console data.
-  uint16_t data = gRfData;
-
-  for (uint8_t i = 0; i < 12; i++) {
-    // Console is reading data now.  Wait for clock to rise.
-    while ( !(PIND & PIN_CLOCK) ) { }
-
-    // Set data pin for this bit.
-    if (data & 0x01) {
-      PORTC |= PIN_DATA;
-    } else {
-      PORTC &= ~PIN_DATA;
-    }
-    // Shift in next LSB of data.
-    data = data >> 1;
-
-    // Wait for clock to drop.  (Console will read DATA when CLOCK drops.)
-    while (PIND & PIN_CLOCK) { }
-  }
-
-  // Force pin high for the rest of the cycle.  These bits aren't used for
-  // normal controllers.
-  PORTC &= PIN_DATA;
+  gShiftBit = 0x0001;
+  ISR_clock();
 }
 
-// \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
-
-void lightLed(int ledState) {
-  unsigned long now = millis();
-  boolean switchBlink = now > gNextLedBlinkTime;
-  if (switchBlink) {
-    gNextLedBlinkTime = now + BLINK_INTERVAL;
+void ISR_clock() {
+  if ((gRfData & gShiftBit) == 0) {
+    PORTD &= ~PIN_DATA;
+  } else {
+    PORTD |= PIN_DATA;
   }
-
-  // Set both off.
-  PORTC &= ~(_BV(1) | _BV(2));
-  // Then just the right one on.
-  switch (ledState) {
-  case GREEN_BLINK_OFF:
-    if (switchBlink) gLedState = GREEN_BLINK_ON;
-    break;
-  case YELLOW_BLINK_OFF:
-    if (switchBlink) gLedState = YELLOW_BLINK_ON;
-    break;
-  case GREEN_BLINK_ON:
-    if (switchBlink) gLedState = GREEN_BLINK_OFF;
-  case GREEN_SOLID:
-    PORTC |= _BV(1);
-    break;
-  case YELLOW_BLINK_ON:
-    if (switchBlink) gLedState = YELLOW_BLINK_OFF;
-  case YELLOW_SOLID:
-    PORTC |= _BV(2);
-    break;
-  }
-}
-
-
-void lightLed() {
-  lightLed(gLedState);
+  gShiftBit <<= 1;
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
 void loop(void) {
   unsigned long now = millis();
-  uint16_t data;
 
   if (gLastDataTime && (gLastDataTime + DATA_MIN_INTERVAL > now)) {
-    gLedState = GREEN_SOLID;
+    lightLedGrn();
   } else {
-    gLedState = YELLOW_SOLID;
+    lightLedYel();
   }
-  lightLed();
 
   // TODO: Set appropriate masks and just read RF_IRQ pin to see pending data?
   if (radio.available()) {
-    lightLed(OFF);
-    // Read data from the radio.
-    while (radio.available()) {
-      radio.read(&data, sizeof(data));
-    }
+    uint16_t data;
+    radio.read(&data, sizeof(data));
     #ifdef DEBUG
     printf("RX got %04x\n", data);
     #endif
@@ -152,7 +93,6 @@ void loop(void) {
     // TODO: Use battery/sleeping status bits?
 
     gLastDataTime = now;
-    lightLed();
   }
 
   // DEV: read data from Serial, send that to console.
@@ -202,17 +142,15 @@ void setup() {
   radio.openReadingPipe(0, address);
   radio.startListening();
 
-  // The LED indicator is hooked up to pins PC1 and PC2.
-  DDRC |= _BV(1) | _BV(2);
-  // The DATA pin is PC3.
-  DDRC |= PIN_DATA;
+  // Output mode: The LED indicator and DATA line, on port C.
+  DDRC |= PIN_GRN | PIN_YEL | PIN_DATA;
 
   // The CLOCK and LATCH signals should be pullup enabled inputs.
   DDRD &= ~(PIN_LATCH | PIN_CLOCK);
   PORTD |= PIN_LATCH | PIN_CLOCK;
 
-  // DATA output is fully interrupt driven, from LATCH and CLOCK.
   attachInterrupt(0, ISR_latch, RISING);
+  attachInterrupt(0, ISR_clock, RISING);
 
   #ifdef DEBUG
   printf("\n");
