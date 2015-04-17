@@ -1,12 +1,15 @@
-(module nRF_Header_2x04 (layer F.Cu) (tedit 54C7FF71)
+(module nRF_Header_2x04 (layer F.Cu) (tedit 552DC25E)
   (descr "Through hole pin header")
   (tags "pin header")
-  (fp_text reference P1 (at -2.032 3.81) (layer F.SilkS) hide
+  (fp_text reference P1 (at 4.064 -3.556) (layer F.SilkS) hide
     (effects (font (size 1 1) (thickness 0.15)))
   )
   (fp_text value nRF (at 3.302 -3.429) (layer F.SilkS) hide
     (effects (font (size 1 1) (thickness 0.15)))
   )
+  (fp_line (start -10.16 2.921) (end -5.715 2.921) (layer F.SilkS) (width 0.15))
+  (fp_line (start -5.715 2.921) (end -5.715 13.589) (layer F.SilkS) (width 0.15))
+  (fp_line (start -5.715 13.589) (end -10.16 13.589) (layer F.SilkS) (width 0.15))
   (fp_line (start 5.08 19.558) (end -10.16 19.558) (layer F.SilkS) (width 0.15))
   (fp_line (start -10.16 -2.54) (end -10.16 26.162) (layer F.SilkS) (width 0.15))
   (fp_line (start -10.16 26.162) (end 5.08 26.162) (layer F.SilkS) (width 0.15))
