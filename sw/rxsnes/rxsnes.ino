@@ -44,6 +44,7 @@ This code is responsible for what needs to happen in the receiver:
 RF24 radio(10, 9);  // CE, CS pins
 
 unsigned long gLastDataTime = 0;
+uint16_t gLatchData = 0xFFFF;
 volatile uint16_t gRfData = 0xFFFF;
 uint16_t gShiftBit = 0x0001;
 
@@ -57,14 +58,15 @@ uint16_t gShiftBit = 0x0001;
 
 void ISR_latch() {
   gShiftBit = 0x0001;
+  gLatchData = gRfData;
   ISR_clock();
 }
 
 void ISR_clock() {
-  if ((gRfData & gShiftBit) == 0) {
-    PORTD &= ~PIN_DATA;
+  if ((gLatchData & gShiftBit) == 0) {
+    PORTC &= ~PIN_DATA;
   } else {
-    PORTD |= PIN_DATA;
+    PORTC |= PIN_DATA;
   }
   gShiftBit <<= 1;
 }
@@ -150,7 +152,7 @@ void setup() {
   PORTD |= PIN_LATCH | PIN_CLOCK;
 
   attachInterrupt(0, ISR_latch, RISING);
-  attachInterrupt(0, ISR_clock, RISING);
+  attachInterrupt(1, ISR_clock, RISING);
 
   #ifdef DEBUG
   printf("\n");
