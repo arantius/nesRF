@@ -32,12 +32,12 @@ This code is responsible for what needs to happen in the receiver:
 
 #define PIN_LATCH _BV(2)  // Pin D2
 #define PIN_CLOCK _BV(3)  // Pin D3
-#define PIN_DATA _BV(2)  // Pin C3
+#define PIN_DATA _BV(2)  // Pin C2
 
 #define PORT_GRN PORTC
-#define PIN_GRN _BV(0)
+#define PIN_GRN _BV(1)
 #define PORT_YEL PORTC
-#define PIN_YEL _BV(1)
+#define PIN_YEL _BV(0)
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
