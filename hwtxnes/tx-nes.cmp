@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 4/14/2015 8:10:26 PM
+Cmp-Mod V01 Created by Cvpcb (2014-10-27 BZR 5228)-product   date = 5/4/2015 6:27:05 PM
 
 BeginCmp
 TimeStamp = /548395B4;
@@ -85,23 +85,23 @@ IdModule  = nesRF TX:ISP_POGO;
 EndCmp
 
 BeginCmp
-TimeStamp = /552C9D8E;
+TimeStamp = /553181D6;
 Reference = P3;
-ValeurCmp = CONN_02X08;
-IdModule  = Discret:SWDIP8;
+ValeurCmp = DIL16;
+IdModule  = nesRF TX:NES_PCB_INTERCONNECT;
 EndCmp
 
 BeginCmp
 TimeStamp = /5495EB0E;
 Reference = P7;
-ValeurCmp = SER_RX;
+ValeurCmp = RX;
 IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
 BeginCmp
 TimeStamp = /5495EA4A;
 Reference = P8;
-ValeurCmp = SER_TX;
+ValeurCmp = TX;
 IdModule  = Wire_Pads:SolderWirePad_single_0-8mmDrill;
 EndCmp
 
