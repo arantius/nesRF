@@ -14,6 +14,9 @@ This code is responsible for what needs to happen in the controller:
 // Define this to send debugging data out via Serial.
 //#define DEBUG
 
+// Define one of CONS_NES or CONS_SNES to indicate which transmitter we are.
+#define CONS_NES
+
 // Addresses of data stored in EEPROM.
 #define EEPROM_RF_CHAN 0x00 /* One byte, the RF channel. */
 #define EEPROM_RF_ADDR 0x01 /* Five bytes, the RF address. */
@@ -37,7 +40,23 @@ This code is responsible for what needs to happen in the controller:
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
-RF24 radio(10, 9);  // CE, CS pins
+#if defined(CONS_NES)
+  RF24 radio(10, 8);  // CE, CS pins
+#elif defined(CONS_SNES)
+  RF24 radio(10, 9);  // CE, CS pins
+#endif
+
+#if defined(CONS_NES)
+#define DDR_LED DDRC
+#define PORT_LED PORTC
+#define PIN_LED_GRN _BV(0)
+#define PIN_LED_YEL _BV(1)
+#elif defined(CONS_SNES)
+#define DDR_LED DDRD
+#define PORT_LED PORTD
+#define PIN_LED_GRN _BV(6)
+#define PIN_LED_YEL _BV(7)
+#endif
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
 
@@ -61,18 +80,18 @@ void goToSleep() {
 }
 
 inline void lightLedGreen() {
-  PORTD |= _BV(6);
-  PORTD &= ~_BV(7);
+  PORT_LED |= PIN_LED_GRN;
+  PORT_LED &= ~PIN_LED_YEL;
 }
 
 inline void lightLedOff() {
-  PORTD &= ~_BV(6);
-  PORTD &= ~_BV(7);
+  PORT_LED &= ~PIN_LED_GRN;
+  PORT_LED &= ~PIN_LED_YEL;
 }
 
 inline void lightLedYellow() {
-  PORTD &= ~_BV(6);
-  PORTD |= _BV(7);
+  PORT_LED &= ~PIN_LED_GRN;
+  PORT_LED |= PIN_LED_YEL;
 }
 
 // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ // \\ //
@@ -92,18 +111,29 @@ void loop(void) {
 
     // Read the state of all input pins into btnData.
     uint16_t btnData = 0xffff;
-    if ((PINB & _BV(0)) == 0) btnData &= ~_BV(0x01);  // y
-    if ((PINB & _BV(6)) == 0) btnData &= ~_BV(0x09);  // x
-    if ((PINB & _BV(7)) == 0) btnData &= ~_BV(0x0B);  // rt
-    if ((PINC & _BV(0)) == 0) btnData &= ~_BV(0x03);  // start
-    if ((PINC & _BV(1)) == 0) btnData &= ~_BV(0x02);  // select
-    if ((PINC & _BV(2)) == 0) btnData &= ~_BV(0x07);  // right
-    if ((PINC & _BV(3)) == 0) btnData &= ~_BV(0x04);  // up
-    if ((PINC & _BV(4)) == 0) btnData &= ~_BV(0x0a);  // lt
-    if ((PINC & _BV(5)) == 0) btnData &= ~_BV(0x06);  // left
-    if ((PIND & _BV(0)) == 0) btnData &= ~_BV(0x05);  // down
-    if ((PIND & _BV(3)) == 0) btnData &= ~_BV(0x00);  // b
-    if ((PIND & _BV(4)) == 0) btnData &= ~_BV(0x08);  // a
+    #if defined(CONS_NES)
+      if ((PINC & _BV(2)) == 0) btnData &= ~_BV(0x00);  // b
+      if ((PINC & _BV(3)) == 0) btnData &= ~_BV(0x02);  // select
+      if ((PINC & _BV(4)) == 0) btnData &= ~_BV(0x03);  // start
+      if ((PINC & _BV(5)) == 0) btnData &= ~_BV(0x07);  // right
+      if ((PIND & _BV(2)) == 0) btnData &= ~_BV(0x06);  // left
+      if ((PIND & _BV(3)) == 0) btnData &= ~_BV(0x05);  // down
+      if ((PIND & _BV(4)) == 0) btnData &= ~_BV(0x04);  // up
+      if ((PIND & _BV(5)) == 0) btnData &= ~_BV(0x08);  // a
+    #elif defined(CONS_SNES)
+      if ((PINB & _BV(0)) == 0) btnData &= ~_BV(0x01);  // y
+      if ((PINB & _BV(6)) == 0) btnData &= ~_BV(0x09);  // x
+      if ((PINB & _BV(7)) == 0) btnData &= ~_BV(0x0B);  // rt
+      if ((PINC & _BV(0)) == 0) btnData &= ~_BV(0x03);  // start
+      if ((PINC & _BV(1)) == 0) btnData &= ~_BV(0x02);  // select
+      if ((PINC & _BV(2)) == 0) btnData &= ~_BV(0x07);  // right
+      if ((PINC & _BV(3)) == 0) btnData &= ~_BV(0x04);  // up
+      if ((PINC & _BV(4)) == 0) btnData &= ~_BV(0x0a);  // lt
+      if ((PINC & _BV(5)) == 0) btnData &= ~_BV(0x06);  // left
+      if ((PIND & _BV(0)) == 0) btnData &= ~_BV(0x05);  // down
+      if ((PIND & _BV(3)) == 0) btnData &= ~_BV(0x00);  // b
+      if ((PIND & _BV(4)) == 0) btnData &= ~_BV(0x08);  // a
+    #endif
 
     #ifdef DEBUG
     printf("BATT %04x; DATA %04x; ", batLvl, btnData);
@@ -142,6 +172,29 @@ void loop(void) {
 
 
 void setup() {
+#if defined(CONS_NES)
+  // The hardware has buttons on:
+  //  PC2 B
+  //  PC3 Select
+  //  PC4 Start
+  //  PC5 Right
+  //  PD2 Left
+  //  PD3 Down
+  //  PD4 Up
+  //  PD5 A
+  // Also there's:
+  //  PD5 CHRG_STAT
+  // Make those pullup-enabled inputs.  But: there are other functions on
+  // other pins of those ports, so ONLY these pins!
+  DDRC &= ~(_BV(2) | _BV(3) | _BV(4) | _BV(5));
+  PORTC |= _BV(2) | _BV(3) | _BV(4) | _BV(5);
+  DDRD &= ~(_BV(2) | _BV(3) | _BV(4) | _BV(5));
+  PORTD |= _BV(2) | _BV(3) | _BV(4) | _BV(5);
+  // Also, make only these pins trigger PCINT.
+  PCICR = _BV(1) | _BV(2);
+  PCMSK1 = _BV(2) | _BV(3) | _BV(4) | _BV(5);
+  PCMSK2 = _BV(2) | _BV(3) | _BV(4) | _BV(5);
+#elif defined(CONS_SNES)
   // The hardware has buttons on:
   //  PB0 Y
   //  PB6 X
@@ -174,9 +227,11 @@ void setup() {
   // If debug is enabled, ignore PD0/PD1 which is serial RX/TX.
   PCMSK2 = _BV(3) | _BV(4);
   #endif
+#endif
 
-  // The LED output is on PD6 and PD6, make them outputs.
-  DDRD |= _BV(6) | _BV(7);
+
+  // Make the LED pins outputs.
+  DDR_LED |= PIN_LED_GRN | PIN_LED_YEL;
 
   #ifdef DEBUG
   Serial.begin(57600);
@@ -200,6 +255,14 @@ void setup() {
 
   // Change address (player number) depending on button,
   // held at power on time.
+#if defined(CONS_NES)
+  if ((PINC & _BV(2)) == 0) {  // b
+    address[0] += 2;
+  }
+  if ((PIND & _BV(5)) == 0) {  // a
+    address[0] += 1;
+  }
+#elif defined(CONS_SNES)
   if ((PINB & _BV(0)) == 0) {  // y
     address[0] += 4;
   } else if ((PINB & _BV(6)) == 0) {  // x
@@ -209,6 +272,7 @@ void setup() {
   } else if ((PIND & _BV(4)) == 0) {  // a
     address[0] += 1;
   }
+#endif
 
   radio.stopListening();
   radio.openWritingPipe(address);
